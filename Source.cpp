@@ -1,11 +1,11 @@
 #include "DrawTree.h"
 
-TreeNode* FreeTree(TreeNode* t)
+TreeNode* free_tree(TreeNode* t)
 {
     if (t != NULL)
     {
-        FreeTree(t->left);
-        FreeTree(t->right);
+        free_tree(t->left);
+        free_tree(t->right);
         delete t;
     }
 
@@ -41,27 +41,6 @@ TreeNode* find_max(TreeNode* t)
     else
     {
         return find_max(t->right);
-    }
-}
-
-TreeNode* find(int elem, TreeNode* t)
-{
-    if (t == NULL)
-    {
-        return NULL;
-    }
-
-    if (elem < t->val)
-    {
-        return find(elem, t->left);
-    }
-    else if (elem > t->val)
-    {
-        return find(elem, t->right);
-    }
-    else
-    {
-        return t;
     }
 }
 
@@ -175,5 +154,5 @@ void main()
     root = remove(10, root);
     print_ascii_tree(root);
 
-    FreeTree(root);
+    free_tree(root);
 }
