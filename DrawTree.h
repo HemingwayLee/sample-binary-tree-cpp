@@ -16,21 +16,43 @@ struct TreeNode
     int val;
 };
 
-class AsciiNode
+class AsciiPrinter
 {
+    class AsciiNode
+    {
+    public:
+        AsciiNode() :
+            left(NULL),
+            right(NULL),
+            edge_length(0),
+            lablen(0),
+            height(0),
+            parent_dir(0)
+        {
+            std::fill(label, label + LABEL_LENGTH, 0);
+        }
+
+    public:
+        AsciiNode *left, *right;
+        //length of the edge from this node to its children
+        int edge_length;
+        int lablen;
+        int height;
+
+        //-1=I am left, 0=I am root, 1=right   
+        int parent_dir;
+
+        //max supported unit32 in dec, 10 digits max
+        char label[LABEL_LENGTH];
+    };
+
 public:
-    AsciiNode() :
-        left(NULL), 
-        right(NULL), 
-        edge_length(0),
-        height(0),
-        lablen(0),
-        parent_dir(0),
-        g_print_next(0),
-        g_gap(3) {
-        std::fill(label, label + LABEL_LENGTH, 0);
-        std::fill(g_lprofile, g_lprofile + MAX_HEIGHT, 0);
-        std::fill(g_rprofile, g_rprofile + MAX_HEIGHT, 0);
+    AsciiPrinter() :
+        m_print_next(0),
+        m_gap(3) 
+    {
+        std::fill(m_lprofile, m_lprofile + MAX_HEIGHT, 0);
+        std::fill(m_rprofile, m_rprofile + MAX_HEIGHT, 0);
     }
 
     //prints ascii tree for given Tree structure
@@ -44,18 +66,18 @@ public:
         compute_edge_lengths(proot);
 
         for (int i = 0; i<proot->height && i < MAX_HEIGHT; i++) {
-            g_lprofile[i] = INFINITY_NUM;
+            m_lprofile[i] = INFINITY_NUM;
         }
-        compute_g_lprofile(proot, 0, 0);
+        compute_m_lprofile(proot, 0, 0);
 
         int xmin = 0;
         for (int i = 0; i < proot->height && i < MAX_HEIGHT; i++) {
-            xmin = std::min(xmin, g_lprofile[i]);
+            xmin = std::min(xmin, m_lprofile[i]);
         }
 
         for (int i = 0; i < proot->height; i++)
         {
-            g_print_next = 0;
+            m_print_next = 0;
             print_level(proot, -xmin, i);
             printf("\n");
         }
@@ -119,46 +141,46 @@ private:
         delete node;
     }
 
-    //The following function fills in the g_lprofile array for the given tree.
+    //The following function fills in the m_lprofile array for the given tree.
     //It assumes that the center of the label of the root of this tree
     //is located at a position (x,y).  It assumes that the edge_length
     //fields have been computed for this tree.
-    void compute_g_lprofile(AsciiNode *node, int x, int y)
+    void compute_m_lprofile(AsciiNode *node, int x, int y)
     {
         if (node == NULL) {
             return;
         }
 
         int isleft = (node->parent_dir == -1);
-        g_lprofile[y] = std::min(g_lprofile[y], x - ((node->lablen - isleft) / 2));
+        m_lprofile[y] = std::min(m_lprofile[y], x - ((node->lablen - isleft) / 2));
         if (node->left != NULL)
         {
             for (int i = 1; i <= node->edge_length && y + i < MAX_HEIGHT; i++) {
-                g_lprofile[y + i] = std::min(g_lprofile[y + i], x - i);
+                m_lprofile[y + i] = std::min(m_lprofile[y + i], x - i);
             }
         }
 
-        compute_g_lprofile(node->left, x - node->edge_length - 1, y + node->edge_length + 1);
-        compute_g_lprofile(node->right, x + node->edge_length + 1, y + node->edge_length + 1);
+        compute_m_lprofile(node->left, x - node->edge_length - 1, y + node->edge_length + 1);
+        compute_m_lprofile(node->right, x + node->edge_length + 1, y + node->edge_length + 1);
     }
 
-    void compute_g_rprofile(AsciiNode *node, int x, int y)
+    void compute_m_rprofile(AsciiNode *node, int x, int y)
     {
         if (node == NULL) {
             return;
         }
 
         int notleft = (node->parent_dir != -1);
-        g_rprofile[y] = std::max(g_rprofile[y], x + ((node->lablen - notleft) / 2));
+        m_rprofile[y] = std::max(m_rprofile[y], x + ((node->lablen - notleft) / 2));
         if (node->right != NULL)
         {
             for (int i = 1; i <= node->edge_length && y + i < MAX_HEIGHT; i++) {
-                g_rprofile[y + i] = std::max(g_rprofile[y + i], x + i);
+                m_rprofile[y + i] = std::max(m_rprofile[y + i], x + i);
             }
         }
 
-        compute_g_rprofile(node->left, x - node->edge_length - 1, y + node->edge_length + 1);
-        compute_g_rprofile(node->right, x + node->edge_length + 1, y + node->edge_length + 1);
+        compute_m_rprofile(node->left, x - node->edge_length - 1, y + node->edge_length + 1);
+        compute_m_rprofile(node->right, x + node->edge_length + 1, y + node->edge_length + 1);
     }
 
     //This function fills in the edge_length and 
@@ -183,9 +205,9 @@ private:
             if (node->left != NULL)
             {
                 for (int i = 0; i<node->left->height && i < MAX_HEIGHT; i++) {
-                    g_rprofile[i] = -INFINITY_NUM;
+                    m_rprofile[i] = -INFINITY_NUM;
                 }
-                compute_g_rprofile(node->left, 0, 0);
+                compute_m_rprofile(node->left, 0, 0);
                 hmin = node->left->height;
             }
             else
@@ -195,9 +217,9 @@ private:
             if (node->right != NULL)
             {
                 for (int i = 0; i<node->right->height && i < MAX_HEIGHT; i++) {
-                    g_lprofile[i] = INFINITY_NUM;
+                    m_lprofile[i] = INFINITY_NUM;
                 }
-                compute_g_lprofile(node->right, 0, 0);
+                compute_m_lprofile(node->right, 0, 0);
                 hmin = std::min(node->right->height, hmin);
             }
             else
@@ -207,7 +229,7 @@ private:
 
             int delta = 4;
             for (int i = 0; i<hmin; i++) {
-                delta = std::max(delta, g_gap + 1 + g_rprofile[i] - g_lprofile[i]);
+                delta = std::max(delta, m_gap + 1 + m_rprofile[i] - m_lprofile[i]);
             }
 
             //If the node has two children of height 1, then we allow the
@@ -246,34 +268,34 @@ private:
         if (level == 0)
         {
             int i = 0;
-            for (; i<(x - g_print_next - ((node->lablen - isleft) / 2)); i++) {
+            for (; i<(x - m_print_next - ((node->lablen - isleft) / 2)); i++) {
                 printf(" ");
             }
-            g_print_next += i;
+            m_print_next += i;
             printf("%s", node->label);
-            g_print_next += node->lablen;
+            m_print_next += node->lablen;
         }
         else if (node->edge_length >= level)
         {
             if (node->left != NULL)
             {
                 int i = 0;
-                for (; i<(x - g_print_next - (level)); i++) {
+                for (; i<(x - m_print_next - (level)); i++) {
                     printf(" ");
                 }
-                g_print_next += i;
+                m_print_next += i;
                 printf("/");
-                g_print_next++;
+                m_print_next++;
             }
             if (node->right != NULL)
             {
                 int i = 0;
-                for (; i<(x - g_print_next + (level)); i++) {
+                for (; i<(x - m_print_next + (level)); i++) {
                     printf(" ");
                 }
-                g_print_next += i;
+                m_print_next += i;
                 printf("\\");
-                g_print_next++;
+                m_print_next++;
             }
         }
         else
@@ -288,25 +310,12 @@ private:
     }
 
 private:
-    AsciiNode *left, *right;
-
-    //length of the edge from this node to its children
-    int edge_length;
-    int height;
-    int lablen;
-
-    //-1=I am left, 0=I am root, 1=right   
-    int parent_dir;
-
-    //max supported unit32 in dec, 10 digits max
-    char label[LABEL_LENGTH];
-
     //used for printing next node in the same level, this is the x coordinate of the next char printed
-    int g_print_next;
+    int m_print_next;
     
-    int g_lprofile[MAX_HEIGHT];
-    int g_rprofile[MAX_HEIGHT];
+    int m_lprofile[MAX_HEIGHT];
+    int m_rprofile[MAX_HEIGHT];
 
     //adjust gap between left and right nodes
-    const int g_gap;
+    const int m_gap;
 };

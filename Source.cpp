@@ -134,7 +134,7 @@ void main()
 {
     TreeNode* root = NULL;
 
-    AsciiNode ascii;
+    AsciiPrinter ascii;
 
     printf("\nAfter inserting val 10..\n");
     root = insert(10, root);
