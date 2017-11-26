@@ -1,11 +1,11 @@
 #include "DrawTree.h"
 
-TreeNode* free_tree(TreeNode* t)
+TreeNode* FreeTree(TreeNode* t)
 {
     if (t != NULL)
     {
-        free_tree(t->left);
-        free_tree(t->right);
+        FreeTree(t->left);
+        FreeTree(t->right);
         delete t;
     }
 
@@ -41,6 +41,27 @@ TreeNode* find_max(TreeNode* t)
     else
     {
         return find_max(t->right);
+    }
+}
+
+TreeNode* find(int elem, TreeNode* t)
+{
+    if (t == NULL)
+    {
+        return NULL;
+    }
+
+    if (elem < t->val)
+    {
+        return find(elem, t->left);
+    }
+    else if (elem > t->val)
+    {
+        return find(elem, t->right);
+    }
+    else
+    {
+        return t;
     }
 }
 
@@ -113,46 +134,47 @@ void main()
 {
     TreeNode* root = NULL;
 
+    AsciiNode ascii;
+
     printf("\nAfter inserting val 10..\n");
     root = insert(10, root);
-    print_ascii_tree(root);
+    ascii.print_ascii_tree(root);
 
     printf("\nAfter inserting val 5..\n");
     root = insert(5, root);
-    print_ascii_tree(root);
+    ascii.print_ascii_tree(root);
 
     printf("\nAfter inserting val 15..\n");
     root = insert(15, root);
-    print_ascii_tree(root);
+    ascii.print_ascii_tree(root);
 
     printf("\nAfter inserting vals 9, 13..\n");
     root = insert(9, root);
     root = insert(13, root);
-    print_ascii_tree(root);
+    ascii.print_ascii_tree(root);
 
     printf("\nAfter inserting vals 2, 6, 12, 14, ..\n");
     root = insert(2, root);
     root = insert(6, root);
     root = insert(12, root);
     root = insert(14, root);
-    print_ascii_tree(root);
-
+    ascii.print_ascii_tree(root);
 
     printf("\n\nAfter deleting a node (14) with no child..\n");
     root = remove(14, root);
-    print_ascii_tree(root);
+    ascii.print_ascii_tree(root);
 
     printf("\n\nAfter deleting a node (13) with left child..\n");
     root = remove(13, root);
-    print_ascii_tree(root);
+    ascii.print_ascii_tree(root);
 
     printf("\n\nAfter deleting a node (5) with left and right children..\n");
     root = remove(5, root);
-    print_ascii_tree(root);
+    ascii.print_ascii_tree(root);
 
     printf("\n\nAfter deleting a node (10, root node) with left and right children..\n");
     root = remove(10, root);
-    print_ascii_tree(root);
+    ascii.print_ascii_tree(root);
 
-    free_tree(root);
+    FreeTree(root);
 }
