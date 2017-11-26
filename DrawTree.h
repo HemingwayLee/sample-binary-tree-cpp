@@ -1,10 +1,10 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
+#include <string>
 
-#define INFINITY_NUM (1<<20)
-#define MAX_HEIGHT 1000
-#define LABEL_LENGTH 11
+static const int INFINITY_NUM = (1 << 20);
+static const int MAX_HEIGHT = 1000;
 
 struct TreeNode
 {
@@ -25,25 +25,21 @@ class AsciiPrinter
             left(NULL),
             right(NULL),
             edge_length(0),
-            lablen(0),
             height(0),
             parent_dir(0)
         {
-            std::fill(label, label + LABEL_LENGTH, 0);
         }
 
     public:
         AsciiNode *left, *right;
         //length of the edge from this node to its children
         int edge_length;
-        int lablen;
         int height;
 
         //-1=I am left, 0=I am root, 1=right   
         int parent_dir;
 
-        //max supported unit32 in dec, 10 digits max
-        char label[LABEL_LENGTH];
+        std::string label;
     };
 
 public:
@@ -109,9 +105,7 @@ private:
             node->right->parent_dir = 1;
         }
 
-        sprintf(node->label, "%d", t->val);
-        node->lablen = strlen(node->label);
-
+        node->label = std::to_string(t->val);
         return node;
     }
 
@@ -152,7 +146,7 @@ private:
         }
 
         int isleft = (node->parent_dir == -1);
-        m_lprofile[y] = std::min(m_lprofile[y], x - ((node->lablen - isleft) / 2));
+        m_lprofile[y] = std::min(m_lprofile[y], x - (((int)node->label.length() - isleft) / 2));
         if (node->left != NULL)
         {
             for (int i = 1; i <= node->edge_length && y + i < MAX_HEIGHT; i++) {
@@ -171,7 +165,7 @@ private:
         }
 
         int notleft = (node->parent_dir != -1);
-        m_rprofile[y] = std::max(m_rprofile[y], x + ((node->lablen - notleft) / 2));
+        m_rprofile[y] = std::max(m_rprofile[y], x + (((int)node->label.length() - notleft) / 2));
         if (node->right != NULL)
         {
             for (int i = 1; i <= node->edge_length && y + i < MAX_HEIGHT; i++) {
@@ -268,12 +262,12 @@ private:
         if (level == 0)
         {
             int i = 0;
-            for (; i<(x - m_print_next - ((node->lablen - isleft) / 2)); i++) {
+            for (; i<(x - m_print_next - ((node->label.length() - isleft) / 2)); i++) {
                 printf(" ");
             }
             m_print_next += i;
-            printf("%s", node->label);
-            m_print_next += node->lablen;
+            printf(node->label.c_str());
+            m_print_next += node->label.length();
         }
         else if (node->edge_length >= level)
         {
