@@ -128,9 +128,7 @@ TreeNode* remove(int value, TreeNode* t)
     return t;
 }
 
-
-//driver routine
-void main()
+int main()
 {
     TreeNode* root = NULL;
 
@@ -177,4 +175,6 @@ void main()
     ascii.print_ascii_tree(root);
 
     FreeTree(root);
+
+    return 0;
 }
