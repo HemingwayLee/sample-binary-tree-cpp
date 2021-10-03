@@ -2,7 +2,27 @@
 
 This project is modified from http://web.archive.org/web/20090617110918/http://www.openasthra.com/c-tidbits/printing-binary-trees-in-ascii/
 
-## The node in binary tree  
+# Getting Started
+## How to compile
+```
+g++ Source.cpp
+clang++ Source.cpp 
+```
+
+## How to run
+```
+./a.out
+```
+
+## Build by docker
+```
+docker build -t mycpp .
+docker run -it --rm mycpp
+./BinaryTree
+```
+
+# About sample-binary-tree-cpp
+## nodes in binary tree  
 ```cpp
 struct TreeNode
 {
