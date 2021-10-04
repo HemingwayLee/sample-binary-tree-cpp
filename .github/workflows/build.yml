@@ -5,11 +5,14 @@ on:
   pull_request: {branches: master}
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
     env:
       IMAGE_NAME: sample-app
-    name: Echo
+    name: Build and Run
     steps:
       - uses: actions/checkout@v2
       - name: check environment
