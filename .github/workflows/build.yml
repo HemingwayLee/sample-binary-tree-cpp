@@ -11,6 +11,7 @@ jobs:
       IMAGE_NAME: sample-app
     name: Echo
     steps:
+      - uses: actions/checkout@v2
       - name: check environment
         run: echo ${{ env.IMAGE_NAME }}
       - name: check build tools and folder structure
@@ -21,9 +22,11 @@ jobs:
           make --version
       - name: build project
         run: |
-          cd ..
+          mkdir build && cd build
           ls
           pwd
+          cmake ..
+          make
       - name: run the executable
         run: |
           ls
