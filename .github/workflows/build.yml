@@ -11,12 +11,21 @@ jobs:
       IMAGE_NAME: sample-app
     name: Echo
     steps:
-      - run: echo "hello, action"
-      - name: show ls and pwd
+      - name: check environment
+        run: echo ${{ env.IMAGE_NAME }}
+      - name: check build tools and folder structure
         run: |
           ls
           pwd
-          which cmake
-          which make
-      - name: access my env variable defined in this file
-        run: echo ${{ env.IMAGE_NAME }}
+          cmake --version
+          make --version
+      - name: build project
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make
+      - name: run the executable
+        run: |
+          ls
+          pwd
