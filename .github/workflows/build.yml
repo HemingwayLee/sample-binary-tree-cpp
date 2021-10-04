@@ -21,9 +21,14 @@ jobs:
           make --version
       - name: build project
         run: |
+          cd ..
+          ls
+          pwd
           mkdir build && cd build
           ls
           pwd
+          cmake ..
+          make
       - name: run the executable
         run: |
           ls
