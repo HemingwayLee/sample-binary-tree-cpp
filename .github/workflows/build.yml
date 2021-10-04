@@ -1,0 +1,22 @@
+name: build
+
+on:
+  push: {branches: main}
+  pull_request: {branches: main}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: sample-app
+    name: Echo
+    steps:
+      - run: echo "hello, action"
+      - name: show ls and pwd
+        run: |
+          ls
+          pwd
+          which cmake
+          which make
+      - name: access my env variable defined in this file
+        run: echo ${{ env.IMAGE_NAME }}
