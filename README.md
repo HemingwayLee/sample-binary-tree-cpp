@@ -14,6 +14,13 @@ clang++ Source.cpp
 ./a.out
 ```
 
+## Build by cmake
+```
+cd build
+cmake ..
+make
+```
+
 ## Build by docker
 ```
 docker build -t mycpp .
